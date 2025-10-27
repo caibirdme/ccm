@@ -1,4 +1,5 @@
 use anyhow::{Context, Result};
+use rpassword::read_password;
 use serde_json::Value;
 use std::fs;
 use std::io::{self, Write};
@@ -14,6 +15,14 @@ fn prompt_input(prompt: &str) -> Result<String> {
     Ok(input.trim().to_string())
 }
 
+/// Prompt user for password input (hidden input)
+fn prompt_password(prompt: &str) -> Result<String> {
+    print!("{}", prompt);
+    io::stdout().flush()?;
+    let password = read_password()?;
+    Ok(password.trim().to_string())
+}
+
 /// Add a profile interactively
 pub fn add_profile_interactive(name: &str, env_vars: &[String]) -> Result<()> {
     println!(
@@ -22,7 +31,7 @@ pub fn add_profile_interactive(name: &str, env_vars: &[String]) -> Result<()> {
     );
 
     let base_url = prompt_input("ANTHROPIC_BASE_URL: ")?.trim().to_string();
-    let auth_token = prompt_input("ANTHROPIC_AUTH_TOKEN: ")?.trim().to_string();
+    let auth_token = prompt_password("ANTHROPIC_AUTH_TOKEN: ")?;
     let model = prompt_input("ANTHROPIC_MODEL (optional, press Enter to skip): ")?
         .trim()
         .to_string();
