@@ -32,4 +32,13 @@ pub enum Commands {
     Run,
     /// Import current Claude settings as a new profile
     ImportCurrent { name: String },
+    /// Rename a profile from original name to new name
+    Rename {
+        /// Original profile name
+        origin: String,
+        /// New profile name
+        new: String,
+    },
+    /// Edit a profile using the default editor (opens profile JSON file in editor)
+    Edit { name: String },
 }

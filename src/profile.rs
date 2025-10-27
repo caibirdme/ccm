@@ -3,6 +3,7 @@ use rpassword::read_password;
 use serde_json::Value;
 use std::fs;
 use std::io::{self, Write};
+use std::process::Command;
 
 use crate::config::{claude_settings_path, current_profile_path, profile_path, profiles_dir};
 
@@ -148,7 +149,27 @@ fn set_current_profile(name: &str) -> Result<()> {
 /// List all profiles
 pub fn list_profiles() -> Result<()> {
     let dir = profiles_dir()?;
-    let mut entries: Vec<_> = fs::read_dir(&dir)?.filter_map(|e| e.ok()).collect();
+    let mut entries: Vec<_> = fs::read_dir(&dir)?
+        .filter_map(|e| e.ok())
+        .filter(|e| {
+            // Skip hidden files (starting with .)
+            if let Some(name) = e.file_name().to_str()
+                && name.starts_with('.')
+            {
+                return false;
+            }
+
+            // Only include .json files
+            if let Some(ext) = e.path().extension()
+                && ext == "json"
+            {
+                return true;
+            }
+
+            false
+        })
+        .collect();
+
     entries.sort_by_key(|e| e.file_name());
     let current = get_current_profile()?;
     println!("Profiles in {}:", dir.display());
@@ -257,5 +278,85 @@ pub fn import_current_profile(name: &str) -> Result<()> {
         name,
         p.display()
     );
+    Ok(())
+}
+
+/// Rename a profile from original name to new name
+pub fn rename_profile(origin: &str, new: &str) -> Result<()> {
+    // Check if origin profile exists
+    let origin_path = profile_path(origin)?;
+    if !origin_path.exists() {
+        anyhow::bail!("Profile '{}' does not exist", origin);
+    }
+
+    // Check if new profile name already exists
+    let new_path = profile_path(new)?;
+    if new_path.exists() {
+        anyhow::bail!("Profile '{}' already exists", new);
+    }
+
+    // Check if origin profile is currently active
+    let is_current = if let Some(current_profile) = get_current_profile()? {
+        current_profile == origin
+    } else {
+        false
+    };
+
+    // Rename the profile file
+    fs::rename(&origin_path, &new_path).with_context(|| {
+        format!(
+            "renaming profile from {} to {}",
+            origin_path.display(),
+            new_path.display()
+        )
+    })?;
+
+    // If the renamed profile was active, update the current profile reference
+    if is_current {
+        set_current_profile(new)?;
+    }
+
+    println!("✓ Profile '{}' renamed to '{}' successfully", origin, new);
+    Ok(())
+}
+
+/// Edit a profile using the default editor
+pub fn edit_profile(name: &str) -> Result<()> {
+    let profile_path = profile_path(name)?;
+    if !profile_path.exists() {
+        anyhow::bail!("Profile '{}' does not exist", name);
+    }
+
+    // Get the editor from environment variables, fallback to common editors
+    let editor = std::env::var("EDITOR")
+        .or_else(|_| std::env::var("VISUAL"))
+        .unwrap_or_else(|_| {
+            // Try to detect a common editor
+            if Command::new("vim").arg("--version").output().is_ok() {
+                "vim".to_string()
+            } else if Command::new("nano").arg("--version").output().is_ok() {
+                "nano".to_string()
+            } else if Command::new("vi").arg("--version").output().is_ok() {
+                "vi".to_string()
+            } else {
+                // Fallback to a basic editor that should exist on most systems
+                "vi".to_string()
+            }
+        });
+
+    println!("Opening profile '{}' with editor: {}", name, editor);
+
+    // Launch the editor with the profile file
+    let status = Command::new(&editor)
+        .arg(&profile_path)
+        .status()
+        .with_context(|| format!("Failed to launch editor '{}'", editor))?;
+
+    if status.success() {
+        println!("✓ Profile '{}' edited successfully", name);
+    } else {
+        anyhow::bail!("Editor exited with error code: {:?}", status.code());
+    }
+
     Ok(())
 }
