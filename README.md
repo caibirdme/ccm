@@ -30,6 +30,11 @@ A Rust CLI to manage multiple Claude Code configuration profiles with interactiv
 
 ## Usage
 
+**Note**: Commands support short aliases:
+- `list` → `ls`
+- `remove` → `rm`
+- `switch` → `swc`
+
 ### Add a profile (interactive)
 
 ```bash
@@ -55,7 +60,7 @@ ccm add my-profile --env FOO=bar --env BAZ=qux
 ### List all profiles
 
 ```bash
-ccm list
+ccm ls
 ```
 
 Output:
@@ -94,7 +99,7 @@ ANTHROPIC_SMALL_FAST_MODEL=gpt-5-mini
 ### Switch to a profile
 
 ```bash
-ccm switch openai-gpt4
+ccm swc openai-gpt4
 ```
 
 This replaces your current `~/.claude/settings.json` with the selected profile and marks it as current.
@@ -102,13 +107,13 @@ This replaces your current `~/.claude/settings.json` with the selected profile a
 ### Remove a profile
 
 ```bash
-ccm remove openai-gpt4
+ccm rm openai-gpt4
 ```
 
 ### Switch and run
 
 ```bash
-ccm switch openai-gpt4
+ccm swc openai-gpt4
 ccm run
 ```
 
@@ -149,10 +154,10 @@ ccm add anthropic --env CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
 # (answer prompts)
 
 # List available profiles
-ccm list
+ccm ls
 
 # Switch between them
-ccm switch openai
+ccm swc openai
 
 # Run Claude Code
 ccm run

@@ -142,6 +142,27 @@ Since this tool works with any Anthropic-compatible API provider, new providers 
 
 ## Development Guidelines
 
+### Third-Party Library Usage Policy
+**MANDATORY**: Before using ANY third-party library, you MUST:
+
+1. **Research First**: Use MCP tools to learn the library's API and best practices
+   - Use suitable mcp tools for library-specific examples and patterns
+   - Search for recent examples in the Rust ecosystem
+
+2. **Version Requirements**: Always use the latest semantic versioning (semver) compatible version
+   - Check crates.io for the most recent version
+   - Update version numbers in `Cargo.toml` accordingly
+   - Ensure version constraints allow for patch and minor updates (e.g., `1.0` not `=1.0.0`)
+
+3. **Examples**:
+   ```bash
+   # Before adding 'tokio' to dependencies
+   mcp__exa__get_code_context_exa query="Rust tokio async runtime tutorial examples" tokensNum=3000
+
+   # Before adding 'serde' functionality
+   mcp__exa__get_code_context_exa query="Rust serde JSON serialization best practices" tokensNum=3000
+   ```
+
 ### Code Style
 - Follow Rust standard conventions
 - Use `anyhow` for error handling
