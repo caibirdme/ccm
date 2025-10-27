@@ -1,8 +1,8 @@
 [package]
 name = "ccm"
 version = "0.1.0"
-edition = "2021"
-authors = ["claude-run"]
+edition = "2024"
+authors = ["caibirdme@qq.com"]
 
 [lib]
 name = "ccm"
