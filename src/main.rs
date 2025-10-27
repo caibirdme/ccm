@@ -3,7 +3,7 @@ use ccm::{
     cli::{Cli, Commands},
     profile,
 };
-use clap::{Parser, CommandFactory};
+use clap::{CommandFactory, Parser};
 
 fn main() -> Result<()> {
     let cli = Cli::parse();
@@ -16,7 +16,7 @@ fn main() -> Result<()> {
         Some(Commands::Show { name }) => profile::show_profile(name)?,
         Some(Commands::Remove { name }) => profile::remove_profile(name)?,
         Some(Commands::Switch { name }) => profile::switch_to_profile(name)?,
-        Some(Commands::Launch) => profile::launch_claude_code()?,
+        Some(Commands::Run) => profile::launch_claude_code()?,
         Some(Commands::ImportCurrent { name }) => profile::import_current_profile(name)?,
         None => {
             // If no subcommand is provided, print help

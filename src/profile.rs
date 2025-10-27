@@ -165,6 +165,18 @@ pub fn show_profile(name: &str) -> Result<()> {
 
 /// Remove a profile
 pub fn remove_profile(name: &str) -> Result<()> {
+    // Check if the profile is currently active
+    if let Some(current_profile) = get_current_profile()?
+        && current_profile == name
+    {
+        println!(
+            "Cannot remove profile '{}' because it is currently active.",
+            name
+        );
+        println!("Please switch to a different profile first using: ccm switch <profile_name>");
+        return Ok(());
+    }
+
     let p = profile_path(name)?;
     if p.exists() {
         fs::remove_file(&p).with_context(|| format!("removing profile {}", p.display()))?;
@@ -200,21 +212,21 @@ pub fn switch_to_profile(name: &str) -> Result<()> {
 /// Launch Claude Code with current profile
 pub fn launch_claude_code() -> Result<()> {
     let current = get_current_profile()?;
-    
+
     if current.is_none() {
         anyhow::bail!(
             "No profile is currently active.\n\
             Please add a profile with 'ccm add <name>' and switch to it with 'ccm switch <name>' first."
         );
     }
-    
+
     let profile_name = current.unwrap();
     println!("Launching Claude Code with profile '{}'...", profile_name);
-    
-    let status = std::process::Command::new("claude")
-        .status()
-        .context("Failed to launch Claude Code. Make sure 'claude' command is available in PATH.")?;
-    
+
+    let status = std::process::Command::new("claude").status().context(
+        "Failed to launch Claude Code. Make sure 'claude' command is available in PATH.",
+    )?;
+
     println!("Claude Code exited with: {}", status);
     Ok(())
 }
