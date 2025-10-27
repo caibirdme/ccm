@@ -18,18 +18,27 @@ pub enum Commands {
         env: Vec<String>,
     },
     /// List saved profiles (shows current active profile)
-    #[command(alias = "ls")]
+    #[command(visible_alias = "ls")]
     List,
     /// Show profile content
     Show { name: String },
     /// Remove a profile
-    #[command(alias = "rm")]
+    #[command(visible_alias = "rm")]
     Remove { name: String },
     /// Switch current Claude settings to a profile
-    #[command(alias = "swc")]
+    #[command(visible_alias = "swc")]
     Switch { name: String },
     /// Run Claude Code with the current profile (use 'switch' first to select a profile)
     Run,
     /// Import current Claude settings as a new profile
     ImportCurrent { name: String },
+    /// Rename a profile from original name to new name
+    Rename {
+        /// Original profile name
+        origin: String,
+        /// New profile name
+        new: String,
+    },
+    /// Edit a profile using the default editor (opens profile JSON file in editor)
+    Edit { name: String },
 }
