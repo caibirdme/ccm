@@ -154,15 +154,17 @@ pub fn list_profiles() -> Result<()> {
         .filter(|e| {
             // Skip hidden files (starting with .)
             if let Some(name) = e.file_name().to_str()
-                && name.starts_with('.') {
-                    return false;
-                }
+                && name.starts_with('.')
+            {
+                return false;
+            }
 
             // Only include .json files
             if let Some(ext) = e.path().extension()
-                && ext == "json" {
-                    return true;
-                }
+                && ext == "json"
+            {
+                return true;
+            }
 
             false
         })
