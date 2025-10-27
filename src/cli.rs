@@ -1,11 +1,10 @@
 use clap::{Parser, Subcommand};
 
 #[derive(Parser)]
-#[command(name = "claude-config")]
-#[command(about = "Manage multiple Claude Code configurations (profiles) and switch/launch", long_about = None)]
+#[command(name = "ccm", version, about = "Manage multiple Claude Code configurations (profiles) and switch/launch", long_about = None)]
 pub struct Cli {
     #[command(subcommand)]
-    pub command: Commands,
+    pub command: Option<Commands>,
 }
 
 #[derive(Subcommand)]

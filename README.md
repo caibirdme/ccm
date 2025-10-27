@@ -21,6 +21,8 @@ A Rust CLI to manage multiple Claude Code configuration profiles with interactiv
 	- [Minimax-M2](#minimax-m2)
 - [Example workflow](#example-workflow)
 - [Installation](#installation)
+	- [Download pre-built binary](#download-pre-built-binary)
+	- [Build from source](#build-from-source)
 - [Defaults](#defaults)
 <!-- /TOC -->
 
@@ -156,9 +158,44 @@ ccm launch
 
 ## Installation
 
+### Download pre-built binary
+
+You can download pre-built binaries from GitHub Releases:
+
+- https://github.com/caibirdme/ccm/releases
+
+Steps (Linux/macOS):
+
+```bash
+# 1) Download the archive for your OS/arch from the Releases page
+# 2) Extract it, then make it executable and move into your PATH
+chmod +x ccm && sudo mv ccm /usr/local/bin/
+
+# Or install to user-local bin
+chmod +x ccm && mkdir -p "$HOME/.local/bin" && mv ccm "$HOME/.local/bin/"
+```
+
+Then run:
+
+```bash
+ccm --version
+```
+
+### Build from source
+
+Prerequisites: Rust toolchain (rustup), Cargo.
+
 ```bash
 cargo install --path .
 ```
+
+Verify:
+
+```bash
+ccm --version
+```
+
+
 
 ## Defaults
 
