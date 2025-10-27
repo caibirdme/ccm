@@ -25,8 +25,8 @@ jobs:
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
       - name: Run cargo check
-        uses: actions-rs/cargo@v1
-        with:
-          command: check
+        run: cargo check
+      - name: Check formatting
+        run: cargo fmt -- --check
       - name: Lint
         run: cargo clippy -- -D warnings
