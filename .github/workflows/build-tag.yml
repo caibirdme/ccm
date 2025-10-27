@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, macos-latest ]
+        os: [ ubuntu-latest, macos-14 ]
 
     steps:
       - name: Checkout
@@ -47,3 +47,14 @@ jobs:
           name: ccm-${{ github.ref_name }}-${{ runner.os }}-${{ runner.arch }}
           path: ccm-${{ github.ref_name }}-${{ runner.os }}-${{ runner.arch }}.tar.gz
           retention-days: 30
+
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ccm-${{ github.ref_name }}-${{ runner.os }}-${{ runner.arch }}.tar.gz
+          tag_name: ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
