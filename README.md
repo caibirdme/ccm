@@ -165,9 +165,34 @@ ccm run
 
 ## Installation
 
+### Quick Install (Recommended)
+
+The fastest way to install `ccm` is using our installation script:
+
+```bash
+curl -sSL https://raw.githubusercontent.com/caibirdme/ccm/main/scripts/install.sh | bash
+```
+
+**With GitHub Token (recommended to avoid rate limiting):**
+```bash
+GITHUB_TOKEN="your_github_token" curl -sSL https://raw.githubusercontent.com/caibirdme/ccm/main/scripts/install.sh | bash
+```
+
+This script will:
+- Detect your OS and architecture automatically
+- Download the latest release from GitHub
+- Install ccm to `$HOME/.local/bin`
+- Add the installation directory to your PATH if needed
+- Verify the installation
+
+**Requirements:**
+- Linux or macOS (Windows is not supported)
+- `curl` must be installed
+- Supported architectures: x86_64, aarch64/arm64
+
 ### Download pre-built binary
 
-You can download pre-built binaries from GitHub Releases:
+You can also download pre-built binaries manually from GitHub Releases:
 
 - https://github.com/caibirdme/ccm/releases
 
