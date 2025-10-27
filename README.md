@@ -2,6 +2,8 @@
 
 A Rust CLI to manage multiple Claude Code configuration profiles with interactive prompts. Easily switch between different providers and models, and launch Claude with a specific configuration.
 
+#![screenshot](./images/show.gif)
+
 <!-- TOC -->
 ## Contents
 
