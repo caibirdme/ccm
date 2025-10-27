@@ -1,0 +1,33 @@
+use clap::{Parser, Subcommand};
+
+#[derive(Parser)]
+#[command(name = "claude-config")]
+#[command(about = "Manage multiple Claude Code configurations (profiles) and switch/launch", long_about = None)]
+pub struct Cli {
+    #[command(subcommand)]
+    pub command: Commands,
+}
+
+#[derive(Subcommand)]
+pub enum Commands {
+    /// Add a profile with interactive prompts for ANTHROPIC_BASE_URL, ANTHROPIC_AUTH_TOKEN, ANTHROPIC_MODEL, API_TIMEOUT_MS, ANTHROPIC_SMALL_FAST_MODEL, and CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC. Use --env for additional environment variables.
+    Add {
+        /// Profile name
+        name: String,
+        /// Additional environment variables (can be used multiple times: --env KEY=VALUE)
+        #[arg(long)]
+        env: Vec<String>,
+    },
+    /// List saved profiles (shows current active profile)
+    List,
+    /// Show profile content
+    Show { name: String },
+    /// Remove a profile
+    Remove { name: String },
+    /// Switch current Claude settings to a profile
+    Switch { name: String },
+    /// Launch Claude Code with the current profile (use 'switch' first to select a profile)
+    Launch,
+    /// Import current Claude settings as a new profile
+    ImportCurrent { name: String },
+}
