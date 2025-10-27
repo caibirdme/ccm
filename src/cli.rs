@@ -25,8 +25,8 @@ pub enum Commands {
     Remove { name: String },
     /// Switch current Claude settings to a profile
     Switch { name: String },
-    /// Launch Claude Code with the current profile (use 'switch' first to select a profile)
-    Launch,
+    /// Run Claude Code with the current profile (use 'switch' first to select a profile)
+    Run,
     /// Import current Claude settings as a new profile
     ImportCurrent { name: String },
 }

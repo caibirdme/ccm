@@ -15,7 +15,7 @@ A Rust CLI to manage multiple Claude Code configuration profiles with interactiv
 	- [Show profile content](#show-profile-content)
 	- [Switch to a profile](#switch-to-a-profile)
 	- [Remove a profile](#remove-a-profile)
-	- [Switch and launch](#switch-and-launch)
+	- [Switch and run](#switch-and-run)
 - [Claude Replacement Providers](#claude-replacement-providers)
 	- [Deepseek](#deepseek)
 	- [Kimi-k2-0905](#kimi-k2-0905)
@@ -105,14 +105,14 @@ This replaces your current `~/.claude/settings.json` with the selected profile a
 ccm remove openai-gpt4
 ```
 
-### Switch and launch
+### Switch and run
 
 ```bash
 ccm switch openai-gpt4
-ccm launch
+ccm run
 ```
 
-First switch to a profile, then launch Claude Code with that profile.
+First switch to a profile, then run Claude Code with that profile.
 
 
 ## Claude Replacement Providers
@@ -154,8 +154,8 @@ ccm list
 # Switch between them
 ccm switch openai
 
-# Launch Claude Code
-ccm launch
+# Run Claude Code
+ccm run
 ```
 
 ## Installation
