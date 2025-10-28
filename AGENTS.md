@@ -1,8 +1,8 @@
-# Claude Config Manager (ccm) - AI Agent Documentation
+# Claude Config Manager (ccm) - Documentation for AI Agents
 
 ## Project Overview
 
-**Claude Config Manager (ccm)** is a Rust CLI tool that manages multiple Claude Code configuration profiles. It enables users to switch between different AI providers that support Anthropic-compatible APIs and launch Claude Code with specific configurations.
+**Claude Config Manager (ccm)** is a CLI tool written in Rust that manages multiple Claude Code configuration profiles. It enables users to switch between different AI providers that support Anthropic-compatible APIs and launch Claude Code with specific configurations.
 
 *Note: The README.md documentation mentions several providers (OpenAI, Deepseek, Kimi, GLM, Minimax) as known examples of compatible services, but this tool works with any provider offering Anthropic-compatible API endpoints.*
 
@@ -12,7 +12,7 @@
 
 1. **CLI Interface** (`src/cli.rs`)
    - Uses `clap` derive macros for command parsing
-   - 7 main commands: `add`, `list`, `show`, `remove`, `switch`, `run`, `import-current`
+   - 7 main commands: `add`, `list`/`ls`, `show`, `remove`/`rm`, `switch`/`swc`, `run`, `import-current`
    - Supports environment variable injection via `--env` flags
 
 2. **Profile Management** (`src/profile.rs`)
@@ -50,7 +50,7 @@ src/
 - `ANTHROPIC_MODEL` (optional) - Model selection
 - `API_TIMEOUT_MS` (optional) - Request timeout
 - `ANTHROPIC_SMALL_FAST_MODEL` (optional) - Fast model alternative
-- `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` (optional) - Traffic control
+- `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` (optional int) - Traffic control
 
 ## File Storage
 
@@ -131,6 +131,7 @@ ccm import-current backup-profile
 1. Add command variant to `Commands` enum in `cli.rs`
 2. Implement handler function in `profile.rs`
 3. Add command routing in `main.rs`
+4. Update CLI interface with any aliases in the clap derive macros
 
 ### Adding New Environment Variables
 1. Update interactive prompts in `add_profile_interactive()`

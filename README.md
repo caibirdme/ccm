@@ -2,6 +2,12 @@
 
 A command line tool to manage multiple Claude Code configuration profiles with interactive prompts. Easily switch between different providers and models, and launch Claude with a specific configuration.
 
+
+## UI Mode
+
+#![tui](./images/tui.png)
+
+## CLI Mode
 #![screenshot](./images/show.gif)
 
 <!-- TOC -->
@@ -23,27 +29,21 @@ A command line tool to manage multiple Claude Code configuration profiles with i
 - `remove` → `rm`
 - `switch` → `swc`
 
+### Enter UI mode
+
+```bash
+ccm ui
+```
+
 ### Add a profile (interactive)
 
 ```bash
 ccm add openai-gpt4
 ```
 
-You'll be prompted for:
-- ANTHROPIC_BASE_URL
-- ANTHROPIC_AUTH_TOKEN
-- ANTHROPIC_MODEL (optional)
-- API_TIMEOUT_MS (optional)
-- ANTHROPIC_SMALL_FAST_MODEL (optional)
-- CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC (optional int)
+You'll be prompted for some questions to set up the profile.
 
 **Note**: Make sure the provider supports anthropic-compatible API.
-
-### Add a profile with environment variables
-
-```bash
-ccm add my-profile --env FOO=bar --env BAZ=qux
-```
 
 ### List all profiles
 
@@ -67,7 +67,7 @@ The current active profile will be marked with `(current)`.
 ccm import my-backup
 ```
 
-This saves your current `~/.claude/settings.json` as a new profile.
+This saves your current `~/.claude/settings.json` as a new profile named `my-backup`, and marks it as current.
 
 ### Show profile content
 

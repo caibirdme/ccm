@@ -128,7 +128,7 @@ pub fn add_profile_interactive(name: &str, env_vars: &[String]) -> Result<()> {
 }
 
 /// Get the current active profile name
-fn get_current_profile() -> Result<Option<String>> {
+pub fn get_current_profile() -> Result<Option<String>> {
     let current_path = current_profile_path()?;
     if !current_path.exists() {
         return Ok(None);

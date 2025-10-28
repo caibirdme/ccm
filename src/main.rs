@@ -1,7 +1,7 @@
 use anyhow::Result;
 use ccm::{
     cli::{Cli, Commands},
-    profile,
+    profile, tui,
 };
 use clap::{CommandFactory, Parser};
 
@@ -20,6 +20,28 @@ fn main() -> Result<()> {
         Some(Commands::Import { name }) => profile::import_current_profile(name)?,
         Some(Commands::Rename { origin, new }) => profile::rename_profile(origin, new)?,
         Some(Commands::Edit { name }) => profile::edit_profile(name)?,
+        Some(Commands::Ui) => match tui::launch_tui() {
+            Ok(_) => {}
+            Err(e) => {
+                eprintln!("TUI mode failed: {}", e);
+                eprintln!();
+                eprintln!("🎮 Showing TUI demo instead...");
+                if let Err(demo_err) = tui::demo_tui() {
+                    eprintln!("Demo also failed: {}", demo_err);
+                    eprintln!("Falling back to CLI mode. You can use these commands:");
+                    eprintln!("  ccm list     - List all profiles");
+                    eprintln!("  ccm switch X - Switch to profile X");
+                    eprintln!("  ccm show X   - Show profile X details");
+                    eprintln!("  ccm add X    - Add new profile X");
+                    eprintln!("  ccm rm X     - Remove profile X");
+                    eprintln!();
+                    eprintln!("Use 'ccm --help' for all available commands.");
+                }
+            }
+        },
+        Some(Commands::TestTui) => {
+            tui::test_tui_components()?;
+        }
         None => {
             // If no subcommand is provided, print help
             Cli::command().print_help()?;
