@@ -31,7 +31,7 @@ pub enum Commands {
     /// Run Claude Code with the current profile (use 'switch' first to select a profile)
     Run,
     /// Import current Claude settings as a new profile
-    ImportCurrent { name: String },
+    Import { name: String },
     /// Rename a profile from original name to new name
     Rename {
         /// Original profile name

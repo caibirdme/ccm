@@ -64,7 +64,7 @@ The current active profile will be marked with `(current)`.
 ### Import current Claude settings
 
 ```bash
-ccm import-current my-backup
+ccm import my-backup
 ```
 
 This saves your current `~/.claude/settings.json` as a new profile.
