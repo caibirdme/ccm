@@ -1,6 +1,6 @@
-# Claude Config Manager (Rust)
+# Claude Config Manager
 
-A Rust CLI to manage multiple Claude Code configuration profiles with interactive prompts. Easily switch between different providers and models, and launch Claude with a specific configuration.
+A command line tool to manage multiple Claude Code configuration profiles with interactive prompts. Easily switch between different providers and models, and launch Claude with a specific configuration.
 
 #![screenshot](./images/show.gif)
 
@@ -8,23 +8,11 @@ A Rust CLI to manage multiple Claude Code configuration profiles with interactiv
 ## Contents
 
 - [Usage](#usage)
-	- [Add a profile (interactive)](#add-a-profile-interactive)
-	- [Add a profile with environment variables](#add-a-profile-with-environment-variables)
-	- [List all profiles](#list-all-profiles)
-	- [Import current Claude settings](#import-current-claude-settings)
-	- [Show profile content](#show-profile-content)
-	- [Switch to a profile](#switch-to-a-profile)
-	- [Remove a profile](#remove-a-profile)
-	- [Switch and run](#switch-and-run)
 - [Claude Replacement Providers](#claude-replacement-providers)
-	- [Deepseek](#deepseek)
-	- [Kimi-k2-0905](#kimi-k2-0905)
-	- [GLM-4.6](#glm-46)
-	- [Minimax-M2](#minimax-m2)
-- [Example workflow](#example-workflow)
 - [Installation](#installation)
 	- [Download pre-built binary](#download-pre-built-binary)
 	- [Build from source](#build-from-source)
+- [Example workflow](#example-workflow)
 - [Defaults](#defaults)
 <!-- /TOC -->
 
@@ -142,27 +130,6 @@ You can choose from various Claude replacement providers that support the Anthro
 
 - [Minimax-M2 Claude Code integration guide](https://platform.minimaxi.com/docs/guides/text-ai-coding-tools#%E5%9C%A8-claude-code-%E4%B8%AD%E4%BD%BF%E7%94%A8-minimax-m2%EF%BC%88%E6%8E%A8%E8%8D%90%EF%BC%89)
 
-
-## Example workflow
-
-```bash
-# Create profiles for different providers
-ccm add openai
-# (answer prompts: ANTHROPIC_BASE_URL, ANTHROPIC_AUTH_TOKEN, etc.)
-
-ccm add anthropic --env CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
-# (answer prompts)
-
-# List available profiles
-ccm ls
-
-# Switch between them
-ccm swc openai
-
-# Run Claude Code
-ccm run
-```
-
 ## Installation
 
 ### Quick Install (Recommended)
@@ -227,7 +194,25 @@ Verify:
 ccm --version
 ```
 
+## Example workflow
 
+```bash
+# Create profiles for different providers
+ccm add openai
+# (answer prompts: ANTHROPIC_BASE_URL, ANTHROPIC_AUTH_TOKEN, etc.)
+
+ccm add anthropic --env CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
+# (answer prompts)
+
+# List available profiles
+ccm ls
+
+# Switch between them
+ccm swc openai
+
+# Run Claude Code
+ccm run
+```
 
 ## Defaults
 
