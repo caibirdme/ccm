@@ -273,6 +273,7 @@ pub fn import_current_profile(name: &str) -> Result<()> {
     }
     fs::copy(&settings, &p)
         .with_context(|| format!("copying {} to profile {}", settings.display(), p.display()))?;
+    set_current_profile(name)?;
     println!(
         "✓ Imported current settings to profile '{}' at {}",
         name,
