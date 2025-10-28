@@ -41,4 +41,9 @@ pub enum Commands {
     },
     /// Edit a profile using the default editor (opens profile JSON file in editor)
     Edit { name: String },
+    /// Launch terminal UI mode (interactive profile management)
+    #[command(visible_alias = "tui")]
+    Ui,
+    /// Test TUI components without requiring a terminal
+    TestTui,
 }
