@@ -42,6 +42,9 @@ fn main() -> Result<()> {
         Some(Commands::TestTui) => {
             tui::test_tui_components()?;
         }
+        Some(Commands::Sync) => {
+            profile::sync_profile()?;
+        }
         None => {
             // If no subcommand is provided, print help
             Cli::command().print_help()?;
