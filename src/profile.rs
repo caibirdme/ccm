@@ -361,3 +361,54 @@ pub fn edit_profile(name: &str) -> Result<()> {
 
     Ok(())
 }
+
+/// Sync current profile with current Claude settings
+pub fn sync_profile() -> Result<()> {
+    let current_profile = get_current_profile()?.ok_or_else(|| {
+        anyhow::anyhow!(
+            "No profile is currently active.\n\
+            Please switch to a profile first using: ccm switch <profile_name>"
+        )
+    })?;
+
+    let settings_path = claude_settings_path();
+    if !settings_path.exists() {
+        anyhow::bail!("No Claude settings found at {}", settings_path.display());
+    }
+
+    let profile_path = profile_path(&current_profile)?;
+    if !profile_path.exists() {
+        anyhow::bail!("Current profile '{}' does not exist", current_profile);
+    }
+
+    // Read both files
+    let settings_content = fs::read_to_string(&settings_path)
+        .with_context(|| format!("reading settings {}", settings_path.display()))?;
+    let profile_content = fs::read_to_string(&profile_path)
+        .with_context(|| format!("reading profile {}", profile_path.display()))?;
+
+    // Parse JSON to compare
+    let settings_value: Value = serde_json::from_str(&settings_content)
+        .with_context(|| format!("parsing settings JSON from {}", settings_path.display()))?;
+    let profile_value: Value = serde_json::from_str(&profile_content)
+        .with_context(|| format!("parsing profile JSON from {}", profile_path.display()))?;
+
+    // Compare the JSON content
+    if settings_value == profile_value {
+        println!(
+            "✓ Claude settings and current profile '{}' are already in sync",
+            current_profile
+        );
+        Ok(())
+    } else {
+        // Sync: update profile to match settings
+        fs::write(&profile_path, settings_content)
+            .with_context(|| format!("writing profile {}", profile_path.display()))?;
+        println!(
+            "✓ Synced current profile '{}' with Claude settings (updated {})",
+            current_profile,
+            profile_path.display()
+        );
+        Ok(())
+    }
+}

@@ -46,4 +46,6 @@ pub enum Commands {
     Ui,
     /// Test TUI components without requiring a terminal
     TestTui,
+    /// Sync current profile with current Claude settings
+    Sync,
 }

@@ -12,7 +12,7 @@
 
 1. **CLI Interface** (`src/cli.rs`)
    - Uses `clap` derive macros for command parsing
-   - 7 main commands: `add`, `list`/`ls`, `show`, `remove`/`rm`, `switch`/`swc`, `run`, `import-current`
+   - 8 main commands: `add`, `list`/`ls`, `show`, `remove`/`rm`, `switch`/`swc`, `run`, `import-current`, `sync`
    - Supports environment variable injection via `--env` flags
 
 2. **Profile Management** (`src/profile.rs`)
@@ -20,6 +20,7 @@
    - JSON-based profile storage with environment variables
    - Safety mechanisms (prevents removal of active profiles)
    - Current profile tracking
+   - **Sync functionality** - compares and synchronizes current profile with active Claude settings
 
 3. **Configuration** (`src/config.rs`)
    - XDG-compliant directory structure
@@ -43,6 +44,11 @@ src/
 - **Environment Variables**: Support for custom variables via `--env KEY=VALUE`
 - **Validation**: Input validation and error handling
 - **Security**: Prevents accidental deletion of active profiles
+
+### Sync Feature
+- **Automatic Synchronization**: `ccm sync` command compares current profile with actual `settings.json`
+- **Bidirectional Update**: Updates ccm profile to match Claude settings when they diverge
+- **Change Detection**: Uses JSON comparison to detect changes accurately
 
 ### Supported Environment Variables
 - `ANTHROPIC_BASE_URL` (required) - API endpoint URL
@@ -123,6 +129,9 @@ ccm switch my-profile && ccm run
 
 # Import current settings
 ccm import-current backup-profile
+
+# Sync current profile with Claude settings
+ccm sync
 ```
 
 ## Extension Points

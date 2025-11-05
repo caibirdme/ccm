@@ -107,6 +107,16 @@ ccm run
 
 First switch to a profile, then run Claude Code with that profile.
 
+### Sync current profile with Claude settings
+
+```bash
+ccm sync
+```
+
+Synchronizes the current profile with your actual `~/.claude/settings.json` file. This is useful when Claude has modified the settings file (for example, when using claude commands that update the configuration), and you want to keep your ccm profile in sync with the actual settings being used.
+
+If the files are different, it will update the ccm profile to match the settings. If they are already in sync, it will confirm that no action is needed.
+
 
 ## Claude Replacement Providers
 
@@ -212,6 +222,9 @@ ccm swc openai
 
 # Run Claude Code
 ccm run
+
+# If Claude has modified settings.json, sync it back to the ccm profile
+ccm sync
 ```
 
 ## Defaults
