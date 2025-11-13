@@ -28,6 +28,7 @@ A command line tool to manage multiple Claude Code configuration profiles with i
 - `list` → `ls`
 - `remove` → `rm`
 - `switch` → `swc`
+- `ui` → `tui`
 
 ### Enter UI mode
 
@@ -116,6 +117,15 @@ ccm sync
 Synchronizes the current profile with your actual `~/.claude/settings.json` file. This is useful when Claude has modified the settings file (for example, when using claude commands that update the configuration), and you want to keep your ccm profile in sync with the actual settings being used.
 
 If the files are different, it will update the ccm profile to match the settings. If they are already in sync, it will confirm that no action is needed.
+
+### Update ccm
+
+```bash
+ccm update          # Check and install latest version
+ccm update --check  # Check only, without installing
+```
+
+Automatically checks GitHub for updates. Supports `GITHUB_TOKEN` environment variable to avoid API rate limiting.
 
 
 ## Claude Replacement Providers
