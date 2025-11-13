@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Context, Result};
+use anyhow::{Context, Result, anyhow};
 use flate2::read::GzDecoder;
 use semver::Version;
 use serde::Deserialize;
@@ -46,8 +46,11 @@ fn detect_platform() -> Result<String> {
 
 /// Fetch the latest release from GitHub
 fn fetch_latest_release() -> Result<Release> {
-    let url = format!("https://api.github.com/repos/{}/releases/latest", GITHUB_REPO);
-    
+    let url = format!(
+        "https://api.github.com/repos/{}/releases/latest",
+        GITHUB_REPO
+    );
+
     let client = reqwest::blocking::Client::builder()
         .user_agent("ccm-updater")
         .build()
@@ -112,21 +115,21 @@ fn download_and_extract(asset_url: &str, asset_name: &str) -> Result<PathBuf> {
     // Download to temporary file
     let temp_dir = env::temp_dir();
     let temp_archive = temp_dir.join(asset_name);
-    
-    let mut file = File::create(&temp_archive)
-        .context("Failed to create temporary file")?;
-    
-    let content = response.bytes().context("Failed to read download content")?;
+
+    let mut file = File::create(&temp_archive).context("Failed to create temporary file")?;
+
+    let content = response
+        .bytes()
+        .context("Failed to read download content")?;
     file.write_all(&content)
         .context("Failed to write downloaded content")?;
-    
+
     drop(file); // Close the file
 
     println!("📦 Extracting binary...");
 
     // Extract the tar.gz archive
-    let tar_gz = File::open(&temp_archive)
-        .context("Failed to open downloaded archive")?;
+    let tar_gz = File::open(&temp_archive).context("Failed to open downloaded archive")?;
     let tar = GzDecoder::new(tar_gz);
     let mut archive = Archive::new(tar);
 
@@ -135,8 +138,7 @@ fn download_and_extract(asset_url: &str, asset_name: &str) -> Result<PathBuf> {
     if extract_dir.exists() {
         fs::remove_dir_all(&extract_dir).ok();
     }
-    fs::create_dir_all(&extract_dir)
-        .context("Failed to create extraction directory")?;
+    fs::create_dir_all(&extract_dir).context("Failed to create extraction directory")?;
 
     archive
         .unpack(&extract_dir)
@@ -159,19 +161,16 @@ fn install_binary(new_binary: &PathBuf) -> Result<()> {
     println!("🔄 Installing update...");
 
     // Get current executable path
-    let current_exe = env::current_exe()
-        .context("Failed to get current executable path")?;
+    let current_exe = env::current_exe().context("Failed to get current executable path")?;
 
     // Create backup of current binary
     let backup_path = current_exe.with_extension("backup");
-    fs::copy(&current_exe, &backup_path)
-        .context("Failed to create backup of current binary")?;
+    fs::copy(&current_exe, &backup_path).context("Failed to create backup of current binary")?;
 
     // Replace the binary
     // We use a temporary file + rename for atomic replacement
     let temp_new = current_exe.with_extension("new");
-    fs::copy(&new_binary, &temp_new)
-        .context("Failed to copy new binary")?;
+    fs::copy(new_binary, &temp_new).context("Failed to copy new binary")?;
 
     // Set executable permissions on Unix
     #[cfg(unix)]
@@ -179,8 +178,7 @@ fn install_binary(new_binary: &PathBuf) -> Result<()> {
         use std::os::unix::fs::PermissionsExt;
         let mut perms = fs::metadata(&temp_new)?.permissions();
         perms.set_mode(0o755);
-        fs::set_permissions(&temp_new, perms)
-            .context("Failed to set executable permissions")?;
+        fs::set_permissions(&temp_new, perms).context("Failed to set executable permissions")?;
     }
 
     // Atomic rename
@@ -195,7 +193,7 @@ fn install_binary(new_binary: &PathBuf) -> Result<()> {
     if let Some(extract_dir) = new_binary.parent() {
         fs::remove_dir_all(extract_dir).ok();
     }
-    
+
     println!("✓ Update installed successfully!");
     println!("  Backup saved to: {}", backup_path.display());
 
@@ -206,21 +204,19 @@ fn install_binary(new_binary: &PathBuf) -> Result<()> {
 pub fn update_self(check_only: bool) -> Result<()> {
     println!("🔍 Checking for updates...");
 
-    let platform = detect_platform()
-        .context("Failed to detect platform")?;
+    let platform = detect_platform().context("Failed to detect platform")?;
 
-    let release = fetch_latest_release()
-        .context("Failed to fetch latest release information")?;
+    let release = fetch_latest_release().context("Failed to fetch latest release information")?;
 
     let latest_version = &release.tag_name;
-    
+
     println!("  Current version: v{}", CURRENT_VERSION);
     println!("  Latest version:  {}", latest_version);
 
     match compare_versions(CURRENT_VERSION, latest_version)? {
         std::cmp::Ordering::Less => {
             println!("🎉 A new version is available!");
-            
+
             if check_only {
                 println!("\nRun 'ccm update' to install the latest version.");
                 return Ok(());
@@ -232,11 +228,17 @@ pub fn update_self(check_only: bool) -> Result<()> {
                 .assets
                 .iter()
                 .find(|a| a.name == asset_pattern)
-                .ok_or_else(|| anyhow!("No release asset found for platform: {} (expected: {})", platform, asset_pattern))?;
+                .ok_or_else(|| {
+                    anyhow!(
+                        "No release asset found for platform: {} (expected: {})",
+                        platform,
+                        asset_pattern
+                    )
+                })?;
 
             let new_binary = download_and_extract(&asset.browser_download_url, &asset.name)?;
             install_binary(&new_binary)?;
-            
+
             println!("\n🚀 Update complete! Please restart ccm to use the new version.");
         }
         std::cmp::Ordering::Equal => {
