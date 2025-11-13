@@ -5,7 +5,53 @@ use std::fs;
 use std::io::{self, Write};
 use std::process::Command;
 
-use crate::config::{claude_settings_path, current_profile_path, profile_path, profiles_dir};
+use crate::config::{
+    claude_settings_path, current_profile_path, ensure_ccm_dir, ensure_profiles_dir, profile_path,
+};
+
+/// Display a simple JSON diff by showing both values side by side
+fn display_json_diff(profile_name: &str, profile_value: &Value, settings_value: &Value) {
+    println!("\n⚠️  Configuration mismatch detected!");
+    println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    println!(
+        "Current profile '{}' differs from settings.json\n",
+        profile_name
+    );
+
+    println!("Profile '{}' content:", profile_name);
+    println!(
+        "{}",
+        serde_json::to_string_pretty(profile_value).unwrap_or_default()
+    );
+
+    println!("\nsettings.json content:");
+    println!(
+        "{}",
+        serde_json::to_string_pretty(settings_value).unwrap_or_default()
+    );
+    println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n");
+}
+
+/// Prompt user to choose what to do when profile differs from settings
+fn prompt_switch_action() -> Result<u32> {
+    println!("What would you like to do?");
+    println!("  1: Switch directly (ignore the difference)");
+    println!("  2: Update current profile with settings.json, then switch");
+    println!("  3: Cancel switch operation");
+    print!("\nYour choice [1-3]: ");
+    io::stdout().flush()?;
+
+    let mut input = String::new();
+    io::stdin().read_line(&mut input)?;
+
+    match input.trim().parse::<u32>() {
+        Ok(n) if (1..=3).contains(&n) => Ok(n),
+        _ => {
+            println!("Invalid choice. Operation cancelled.");
+            Ok(3)
+        }
+    }
+}
 
 /// Prompt user for input
 fn prompt_input(prompt: &str) -> Result<String> {
@@ -116,7 +162,8 @@ pub fn add_profile_interactive(name: &str, env_vars: &[String]) -> Result<()> {
     }
 
     let v = Value::Object(obj);
-    let p = profile_path(name)?;
+    ensure_profiles_dir()?;
+    let p = profile_path(name);
     fs::write(&p, serde_json::to_string_pretty(&v)?)
         .with_context(|| format!("writing profile {}", p.display()))?;
     println!(
@@ -129,7 +176,7 @@ pub fn add_profile_interactive(name: &str, env_vars: &[String]) -> Result<()> {
 
 /// Get the current active profile name
 pub fn get_current_profile() -> Result<Option<String>> {
-    let current_path = current_profile_path()?;
+    let current_path = current_profile_path();
     if !current_path.exists() {
         return Ok(None);
     }
@@ -140,7 +187,8 @@ pub fn get_current_profile() -> Result<Option<String>> {
 
 /// Set the current active profile name
 fn set_current_profile(name: &str) -> Result<()> {
-    let current_path = current_profile_path()?;
+    ensure_ccm_dir()?;
+    let current_path = current_profile_path();
     fs::write(&current_path, name)
         .with_context(|| format!("writing current profile to {}", current_path.display()))?;
     Ok(())
@@ -148,7 +196,7 @@ fn set_current_profile(name: &str) -> Result<()> {
 
 /// List all profiles
 pub fn list_profiles() -> Result<()> {
-    let dir = profiles_dir()?;
+    let dir = ensure_profiles_dir()?;
     let mut entries: Vec<_> = fs::read_dir(&dir)?
         .filter_map(|e| e.ok())
         .filter(|e| {
@@ -187,7 +235,7 @@ pub fn list_profiles() -> Result<()> {
 
 /// Show a profile's content
 pub fn show_profile(name: &str) -> Result<()> {
-    let p = profile_path(name)?;
+    let p = profile_path(name);
     let s = fs::read_to_string(&p).with_context(|| format!("reading profile {}", p.display()))?;
     println!("{}", s);
     Ok(())
@@ -207,7 +255,7 @@ pub fn remove_profile(name: &str) -> Result<()> {
         return Ok(());
     }
 
-    let p = profile_path(name)?;
+    let p = profile_path(name);
     if p.exists() {
         fs::remove_file(&p).with_context(|| format!("removing profile {}", p.display()))?;
         println!("Removed profile '{}'", name);
@@ -219,10 +267,79 @@ pub fn remove_profile(name: &str) -> Result<()> {
 
 /// Switch to a profile
 pub fn switch_to_profile(name: &str) -> Result<()> {
-    let p = profile_path(name)?;
+    let p = profile_path(name);
     if !p.exists() {
         anyhow::bail!("Profile '{}' does not exist", name);
     }
+
+    // Check if there's a current profile and if it differs from settings.json
+    if let Some(current_profile) = get_current_profile()? {
+        let settings_path = claude_settings_path();
+
+        // Only check if settings.json exists and current profile exists
+        if settings_path.exists() {
+            let current_profile_path = profile_path(&current_profile);
+
+            if current_profile_path.exists() {
+                // Read both files
+                let settings_content = fs::read_to_string(&settings_path)
+                    .with_context(|| format!("reading settings {}", settings_path.display()))?;
+                let profile_content =
+                    fs::read_to_string(&current_profile_path).with_context(|| {
+                        format!("reading profile {}", current_profile_path.display())
+                    })?;
+
+                // Parse JSON to compare
+                let settings_value: Value =
+                    serde_json::from_str(&settings_content).with_context(|| {
+                        format!("parsing settings JSON from {}", settings_path.display())
+                    })?;
+                let profile_value: Value =
+                    serde_json::from_str(&profile_content).with_context(|| {
+                        format!(
+                            "parsing profile JSON from {}",
+                            current_profile_path.display()
+                        )
+                    })?;
+
+                // If they differ, prompt user
+                if settings_value != profile_value {
+                    display_json_diff(&current_profile, &profile_value, &settings_value);
+
+                    let choice = prompt_switch_action()?;
+
+                    match choice {
+                        1 => {
+                            // Continue with switch
+                            println!("Proceeding with switch...");
+                        }
+                        2 => {
+                            // Update current profile with settings.json content, then switch
+                            println!(
+                                "Updating profile '{}' with current settings.json...",
+                                current_profile
+                            );
+                            fs::write(&current_profile_path, settings_content).with_context(
+                                || format!("writing profile {}", current_profile_path.display()),
+                            )?;
+                            println!("✓ Profile '{}' updated successfully", current_profile);
+                        }
+                        3 => {
+                            // Cancel operation
+                            println!("Switch operation cancelled.");
+                            return Ok(());
+                        }
+                        _ => {
+                            println!("Invalid choice. Operation cancelled.");
+                            return Ok(());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Perform the actual switch
     let settings = claude_settings_path();
     if let Some(parent) = settings.parent() {
         fs::create_dir_all(parent)
@@ -232,7 +349,7 @@ pub fn switch_to_profile(name: &str) -> Result<()> {
         .with_context(|| format!("copying profile {} to {}", p.display(), settings.display()))?;
     set_current_profile(name)?;
     println!(
-        "Switched Claude settings to profile '{}' (wrote to {})",
+        "✓ Switched Claude settings to profile '{}' (wrote to {})",
         name,
         settings.display()
     );
@@ -267,7 +384,8 @@ pub fn import_current_profile(name: &str) -> Result<()> {
     if !settings.exists() {
         anyhow::bail!("No Claude settings found at {}", settings.display());
     }
-    let p = profile_path(name)?;
+    ensure_profiles_dir()?;
+    let p = profile_path(name);
     if p.exists() {
         anyhow::bail!("Profile '{}' already exists", name);
     }
@@ -285,13 +403,13 @@ pub fn import_current_profile(name: &str) -> Result<()> {
 /// Rename a profile from original name to new name
 pub fn rename_profile(origin: &str, new: &str) -> Result<()> {
     // Check if origin profile exists
-    let origin_path = profile_path(origin)?;
+    let origin_path = profile_path(origin);
     if !origin_path.exists() {
         anyhow::bail!("Profile '{}' does not exist", origin);
     }
 
     // Check if new profile name already exists
-    let new_path = profile_path(new)?;
+    let new_path = profile_path(new);
     if new_path.exists() {
         anyhow::bail!("Profile '{}' already exists", new);
     }
@@ -323,7 +441,7 @@ pub fn rename_profile(origin: &str, new: &str) -> Result<()> {
 
 /// Edit a profile using the default editor
 pub fn edit_profile(name: &str) -> Result<()> {
-    let profile_path = profile_path(name)?;
+    let profile_path = profile_path(name);
     if !profile_path.exists() {
         anyhow::bail!("Profile '{}' does not exist", name);
     }
@@ -376,7 +494,7 @@ pub fn sync_profile() -> Result<()> {
         anyhow::bail!("No Claude settings found at {}", settings_path.display());
     }
 
-    let profile_path = profile_path(&current_profile)?;
+    let profile_path = profile_path(&current_profile);
     if !profile_path.exists() {
         anyhow::bail!("Current profile '{}' does not exist", current_profile);
     }

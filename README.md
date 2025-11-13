@@ -232,4 +232,9 @@ ccm sync
 - Claude settings path: `$HOME/.claude/settings.json`
 - Profiles directory: `$XDG_CONFIG_HOME/ccm/profiles` (falls back to `$HOME/.config/ccm/profiles`)
 - Current profile tracking: `$XDG_CONFIG_HOME/ccm/current`
-- Override settings path via `CLAUDE_SETTINGS_PATH` environment variable
+
+### Environment Variable Overrides
+
+For testing or custom configurations:
+- `CLAUDE_SETTINGS_PATH` - Override Claude settings file location
+- `CCM_CONFIG_DIR` - Override CCM configuration base directory

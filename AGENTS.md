@@ -65,6 +65,13 @@ src/
 - **Current Profile**: `~/.config/ccm/current`
 - **Claude Settings**: `~/.claude/settings.json`
 
+### Environment Variable Overrides
+For testing or custom configurations, these directories can be overridden:
+- **`CCM_CONFIG_DIR`**: Override the base directory for CCM configuration (default: `~/.config/ccm`)
+  - Profiles will be stored in `$CCM_CONFIG_DIR/profiles/`
+  - Current profile marker will be at `$CCM_CONFIG_DIR/current`
+- **`CLAUDE_SETTINGS_PATH`**: Override the Claude settings file path (default: `~/.claude/settings.json`)
+
 ### Profile Format
 ```json
 {
@@ -151,6 +158,29 @@ ccm sync
 Since this tool works with any Anthropic-compatible API provider, new providers can be documented in README.md as they are discovered and tested. Provider compatibility is determined by their API endpoint compatibility, not by any specific code changes to this tool.
 
 ## Development Guidelines
+
+### Testing Environment Safety
+**CRITICAL**: When testing this tool, you MUST NOT modify real user configuration directories:
+
+- **NEVER modify**: `$HOME/.claude/` or `$HOME/.config/ccm/` during testing
+- **ALWAYS use**: Test directories in `/tmp` for all testing activities
+
+To use test directories, set these environment variables before running tests:
+```bash
+# Example: Safe testing configuration
+export CCM_CONFIG_DIR=/tmp/ccm-test
+export CLAUDE_SETTINGS_PATH=/tmp/claude-test/settings.json
+
+# Now all ccm commands will use test directories
+ccm add test-profile
+ccm list
+```
+
+This ensures that:
+- Real user profiles in `~/.config/ccm/profiles/` are not affected
+- Real Claude settings in `~/.claude/settings.json` are not modified
+- Test data is isolated in `/tmp` and can be safely deleted
+- Multiple test sessions can run concurrently with different temp directories
 
 ### Third-Party Library Usage Policy
 **MANDATORY**: Before using ANY third-party library, you MUST:

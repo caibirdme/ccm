@@ -16,7 +16,7 @@ use serde_json::Value;
 use std::io::IsTerminal;
 use std::{fs, io};
 
-use crate::config::{profile_path, profiles_dir};
+use crate::config::{ensure_profiles_dir, profile_path};
 use crate::profile::{
     add_profile_interactive, get_current_profile, launch_claude_code, remove_profile,
     rename_profile, switch_to_profile,
@@ -64,7 +64,7 @@ impl App {
     }
 
     pub fn refresh_profiles(&mut self) -> Result<()> {
-        let dir = profiles_dir()?;
+        let dir = ensure_profiles_dir()?;
         let mut entries: Vec<_> = fs::read_dir(&dir)?
             .filter_map(|e| e.ok())
             .filter(|e| {
@@ -685,7 +685,7 @@ impl TuiApp {
     }
 
     pub fn get_profile_details_static(profile_name: &str) -> Result<Vec<Line<'static>>> {
-        let profile_path = profile_path(profile_name)?;
+        let profile_path = profile_path(profile_name);
         let content = fs::read_to_string(&profile_path)
             .with_context(|| format!("reading profile {}", profile_path.display()))?;
 
@@ -1086,7 +1086,7 @@ pub fn demo_tui() -> Result<()> {
         println!("{}", "─".repeat(60));
 
         // Show the original JSON for comparison
-        if let Ok(content) = std::fs::read_to_string(profile_path(profile_name)?) {
+        if let Ok(content) = std::fs::read_to_string(profile_path(profile_name)) {
             // Process JSON to hide tokens
             if let Ok(json) = serde_json::from_str::<serde_json::Value>(&content) {
                 let mut display_json = json.clone();
