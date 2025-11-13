@@ -34,5 +34,7 @@ jobs:
         run: cargo fmt -- --check
       - name: Lint
         run: cargo clippy -- -D warnings
+      - name: Build project
+        run: cargo build
       - name: Run full test suite
         run: just full-test
