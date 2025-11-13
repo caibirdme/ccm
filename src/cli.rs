@@ -48,4 +48,10 @@ pub enum Commands {
     TestTui,
     /// Sync current profile with current Claude settings
     Sync,
+    /// Check for updates and install the latest version from GitHub
+    Update {
+        /// Only check for updates without installing
+        #[arg(long)]
+        check: bool,
+    },
 }

@@ -45,6 +45,9 @@ fn main() -> Result<()> {
         Some(Commands::Sync) => {
             profile::sync_profile()?;
         }
+        Some(Commands::Update { check }) => {
+            ccm::update::update_self(*check)?;
+        }
         None => {
             // If no subcommand is provided, print help
             Cli::command().print_help()?;
