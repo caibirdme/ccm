@@ -38,7 +38,9 @@ echo ""
 
 # Run ccm commands in test mode
 echo "1. Adding a test profile..."
-CCM_BIN="./target/debug/ccm"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+CCM_BIN="$PROJECT_DIR/target/debug/ccm"
 
 # Create a test profile non-interactively by preparing the JSON
 mkdir -p "$TEST_DIR/profiles"

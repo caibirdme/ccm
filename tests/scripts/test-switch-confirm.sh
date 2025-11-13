@@ -15,10 +15,12 @@ mkdir -p "$TEST_DIR/claude"
 
 # Build the project
 echo "Building ccm..."
-cd /data/workspace/ccm
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+cd "$PROJECT_DIR"
 cargo build --quiet
 
-CCM="./target/debug/ccm"
+CCM="$PROJECT_DIR/target/debug/ccm"
 
 echo ""
 echo "=== Test 1: Create two profiles ==="
