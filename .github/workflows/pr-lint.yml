@@ -28,5 +28,11 @@ jobs:
         uses: extractions/setup-just@v3
         with:
           just-version: '1.43.1'
+      - name: Run cargo check
+        run: cargo check
+      - name: Check formatting
+        run: cargo fmt -- --check
+      - name: Lint
+        run: cargo clippy -- -D warnings
       - name: Run full test suite
         run: just full-test
