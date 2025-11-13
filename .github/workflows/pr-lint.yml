@@ -24,9 +24,9 @@ jobs:
           components: clippy, rustfmt
       - name: Cache cargo
         uses: Swatinem/rust-cache@v2
-      - name: Run cargo check
-        run: cargo check
-      - name: Check formatting
-        run: cargo fmt -- --check
-      - name: Lint
-        run: cargo clippy -- -D warnings
+      - name: Install just
+        uses: extractions/setup-just@v3
+        with:
+          just-version: '1.43.1'
+      - name: Run full test suite
+        run: just full-test

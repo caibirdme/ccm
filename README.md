@@ -232,4 +232,35 @@ ccm sync
 - Claude settings path: `$HOME/.claude/settings.json`
 - Profiles directory: `$XDG_CONFIG_HOME/ccm/profiles` (falls back to `$HOME/.config/ccm/profiles`)
 - Current profile tracking: `$XDG_CONFIG_HOME/ccm/current`
-- Override settings path via `CLAUDE_SETTINGS_PATH` environment variable
+
+### Environment Variable Overrides
+
+For testing or custom configurations:
+- `CLAUDE_SETTINGS_PATH` - Override Claude settings file location
+- `CCM_CONFIG_DIR` - Override CCM configuration base directory
+
+## Testing
+
+⚠️ **Important**: When testing, never modify real configuration directories (`$HOME/.config/ccm/` or `$HOME/.claude/`)!
+
+Use the provided safe testing script:
+
+```bash
+./scripts/test-safe.sh
+```
+
+Or manually set environment variables to use temporary directories:
+
+```bash
+export CCM_CONFIG_DIR=/tmp/ccm-test
+export CLAUDE_SETTINGS_PATH=/tmp/claude-test/settings.json
+
+# Now all ccm commands use test directories
+ccm add test-profile
+ccm list
+
+# Clean up when done
+rm -rf /tmp/ccm-test /tmp/claude-test
+```
+
+See [TESTING.zh-CN.md](./TESTING.zh-CN.md) for detailed testing guidelines (in Chinese).

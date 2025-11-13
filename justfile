@@ -19,6 +19,16 @@ build-dev:
 test:
     cargo test
 
+# Run full test suite (unit tests + integration test scripts)
+full-test: test
+    @echo ""
+    @echo "Running integration test scripts..."
+    @bash tests/scripts/test-safe.sh
+    @echo ""
+    @bash tests/scripts/test-switch-confirm.sh
+    @echo ""
+    @echo "✓ All tests passed!"
+
 # Clean build artifacts
 clean:
     cargo clean
