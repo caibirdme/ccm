@@ -6,10 +6,7 @@ updates:
       interval: "daily"
       time: "10:00"
       timezone: "Asia/Shanghai"
-    open-pull-requests-limit: 10
-    labels:
-      - dependencies
-      - rust
+    open-pull-requests-limit: 5
     commit-message:
       prefix: "deps"
       include: "scope"
