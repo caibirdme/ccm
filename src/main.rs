@@ -15,7 +15,7 @@ fn main() -> Result<()> {
         Some(Commands::List) => profile::list_profiles()?,
         Some(Commands::Show { name }) => profile::show_profile(name)?,
         Some(Commands::Remove { name }) => profile::remove_profile(name)?,
-        Some(Commands::Switch { name }) => profile::switch_to_profile(name)?,
+        Some(Commands::Switch { name, project }) => profile::switch_to_profile(name, *project)?,
         Some(Commands::Run) => profile::launch_claude_code()?,
         Some(Commands::Import { name }) => profile::import_current_profile(name)?,
         Some(Commands::Rename { origin, new }) => profile::rename_profile(origin, new)?,
@@ -47,6 +47,9 @@ fn main() -> Result<()> {
         }
         Some(Commands::Update { check }) => {
             ccm::update::update_self(*check)?;
+        }
+        Some(Commands::ClearProject) => {
+            profile::clear_project_profile()?;
         }
         None => {
             // If no subcommand is provided, print help

@@ -62,6 +62,14 @@ Output:
 
 The current active profile will be marked with `(current)`.
 
+When working in a project with a project-specific profile, you'll see:
+```
+- openai-gpt5
+- self-deploy-kimi-k2 (current project)
+- some-router-glm
+- some-router-claude-sonnet-45 (current)
+```
+
 ### Import current Claude settings
 
 ```bash
@@ -88,10 +96,24 @@ ANTHROPIC_SMALL_FAST_MODEL=gpt-5-mini
 ### Switch to a profile
 
 ```bash
+# Global switch (updates ~/.claude/settings.json)
 ccm swc openai-gpt4
+
+# Project-specific switch (updates .claude/settings.local.json in current directory)
+ccm swc -p openai-gpt4
 ```
 
-This replaces your current `~/.claude/settings.json` with the selected profile and marks it as current.
+The global switch replaces your `~/.claude/settings.json` with the selected profile.
+
+The project-specific switch (`-p`) merges the profile into `.claude/settings.local.json` in the current directory, preserving any existing project-specific settings (like `permissions`, `allowedTools`, etc.).
+
+### Clear project-specific profile
+
+```bash
+ccm clear-project
+```
+
+Removes the profile fields from `.claude/settings.local.json` while preserving other project-specific settings. The project will then use the global profile.
 
 ### Remove a profile
 
