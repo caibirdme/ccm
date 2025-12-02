@@ -45,6 +45,10 @@ fmt:
 lint:
     cargo clippy -- -D warnings
 
+# Fix clippy warnings automatically
+fix-lint:
+    cargo clippy --fix --allow-dirty --allow-staged
+
 # Run all checks (fmt, lint, test)
 check: fmt-check lint test
     @echo "✓ All checks passed!"

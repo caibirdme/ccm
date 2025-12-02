@@ -890,8 +890,8 @@ impl TuiApp {
                     }
                     KeyCode::Enter => {
                         if self.app.popup_selection {
-                            // Yes selected
-                            if let Err(e) = switch_to_profile(profile_name) {
+                            // Yes selected - TUI uses global mode by default
+                            if let Err(e) = switch_to_profile(profile_name, false) {
                                 self.app
                                     .show_message(format!("Failed to switch profile: {}", e));
                             } else {

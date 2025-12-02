@@ -27,7 +27,12 @@ pub enum Commands {
     Remove { name: String },
     /// Switch current Claude settings to a profile
     #[command(visible_alias = "swc")]
-    Switch { name: String },
+    Switch {
+        name: String,
+        /// Apply to current project instead of global (uses current working directory)
+        #[arg(short, long)]
+        project: bool,
+    },
     /// Run Claude Code with the current profile (use 'switch' first to select a profile)
     Run,
     /// Import current Claude settings as a new profile
@@ -54,4 +59,6 @@ pub enum Commands {
         #[arg(long)]
         check: bool,
     },
+    /// Clear project-specific profile setting (revert to global)
+    ClearProject,
 }
