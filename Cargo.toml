@@ -15,7 +15,7 @@ serde_json = "1.0"
 dirs = "6.0"
 anyhow = "1.0"
 rpassword = "7.4"
-ratatui = "0.29"
+ratatui = "0.30"
 crossterm = "0.29"
 color-eyre = "0.6"
 reqwest = { version = "0.12", features = ["blocking", "json", "rustls-tls", "charset", "http2", "system-proxy"], default-features = false }
